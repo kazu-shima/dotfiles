@@ -5,6 +5,21 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+### Added by Zinit's installer
+if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+        print -P "%F{160}▓▒░ The clone has failed.%f%b"
+fi
+
+source "$HOME/.zinit/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+### End of Zinit's installer chunk
+
+#### zsh設定
 #################################  HISTORY  #################################
 # history
 HISTFILE=$HOME/.zsh-history # 履歴を保存するファイル
@@ -26,10 +41,13 @@ zstyle ':completion:*' matcher-list '' 'm:{[:lower:]}={[:upper:]}' '+m:{[:upper:
 zstyle ':completion:*' format '%B%F{blue}%d%f%b'
 zstyle ':completion:*' group-name ''
 
-
 ### 補完侯補をメニューから選択する。
 ### select=2: 補完候補を一覧から選択する。補完候補が2つ以上なければすぐに補完する。
 zstyle ':completion:*:default' menu select=2
+
+### 環境変数の補完
+setopt AUTO_PARAM_KEYS
+
 #################################  OTHERS  #################################
 # automatically change directory when dir name is typed
 setopt auto_cd
@@ -37,28 +55,33 @@ setopt auto_cd
 # disable ctrl+s, ctrl+q
 setopt no_flow_control
 
-### Added by Zinit's installer
-if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
-    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
-    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
-        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
-        print -P "%F{160}▓▒░ The clone has failed.%f%b"
-fi
+############################### peco #######################################
+## コマンド履歴検索
+function peco-history-selection() {
+  BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | peco`
+  CURSOR=$#BUFFER
+  zle reset-prompt
+}
+zle -N peco-history-selection
+bindkey '^R' peco-history-selection
 
-source "$HOME/.zinit/bin/zinit.zsh"
-autoload -Uz _zinit
-(( ${+_comps} )) && _comps[zinit]=_zinit
-### End of Zinit's installer chunk
 
+############################ 設定読み込み ####################################
 SCRIPT_DIR=$HOME/dotfiles
-
 source $SCRIPT_DIR/zsh/plugins.zsh
 source $SCRIPT_DIR/zsh/config.zsh
 source $SCRIPT_DIR/zsh/p10k.zsh
 
 
-###
+# エイリアス・他
 export WINDOWS_HOME="/mnt/c/Users/Kazuhide Shimada"
-alias ls="ls --color=auto"
-alias grep="grep --color=auto"
+alias ls="ls --color"
+alias grep="grep --color"
+
+# cdでディレクトリ移動したとき自動でlsする
+chpwd() {
+  if [[ $(pwd) != $HOME ]] ;
+  then;
+  ls
+  fi
+}
