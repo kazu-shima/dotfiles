@@ -55,22 +55,12 @@ setopt auto_cd
 # disable ctrl+s, ctrl+q
 setopt no_flow_control
 
-############################### peco #######################################
-## コマンド履歴検索
-function peco-history-selection() {
-  BUFFER=`history -n 1 | tac  | awk '!a[$0]++' | peco`
-  CURSOR=$#BUFFER
-  zle reset-prompt
-}
-zle -N peco-history-selection
-bindkey '^R' peco-history-selection
-
-
 ############################ 設定読み込み ####################################
 SCRIPT_DIR=$HOME/dotfiles
 source $SCRIPT_DIR/zsh/plugins.zsh
 source $SCRIPT_DIR/zsh/config.zsh
 source $SCRIPT_DIR/zsh/p10k.zsh
+#source $SCRIPT_DIR/zsh/zeno_config.zsh
 
 
 # エイリアス・他
@@ -99,3 +89,10 @@ chpwd() {
   ls
   fi
 }
+
+# fzf設定
+export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
+
+# deno
+export DENO_INSTALL="/home/shima/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
