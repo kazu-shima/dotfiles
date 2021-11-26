@@ -1,5 +1,5 @@
 ### p10k
-zinit ice depth=1; zinit light romkatv/powerlevel10k
+#zinit ice depth=1; zinit light romkatv/powerlevel10k
 
 ### syntax highlight
 zinit light zdharma/fast-syntax-highlighting

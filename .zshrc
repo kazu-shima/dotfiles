@@ -1,9 +1,10 @@
+######### p10k設定 #########
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+#fi
 
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
@@ -58,15 +59,16 @@ setopt no_flow_control
 ############################ 設定読み込み ####################################
 SCRIPT_DIR=$HOME/dotfiles
 source $SCRIPT_DIR/zsh/plugins.zsh
-source $SCRIPT_DIR/zsh/config.zsh
-source $SCRIPT_DIR/zsh/p10k.zsh
+#source $SCRIPT_DIR/zsh/p10k.zsh
 #source $SCRIPT_DIR/zsh/zeno_config.zsh
+export STARSHIP_CONFIG=$SCRIPT_DIR/starship.toml
 
 
-# エイリアス・他
+### alias and other ###
 export WINDOWS_HOME="/mnt/c/Users/Kazuhide Shimada"
 alias grep="grep --color"
 
+### exa (cargo install) ###
 if [[ $(command -v exa) ]]; then
   alias e='exa --icons --git'
   alias l=e
@@ -93,6 +95,19 @@ chpwd() {
 # fzf設定
 export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 
-# deno
-export DENO_INSTALL="/home/shima/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
+### deno ###
+if [ -e "$HOME/.deno" ]
+then
+  export DENO_INSTALL="$HOME/.deno"
+  export PATH="$DENO_INSTALL/bin:$PATH"
+fi
+
+### starship 導入 ###
+eval "$(starship init zsh)"
+
+### n (N_PREFIX) ###
+export N_PREFIX=$HOME/.n
+export PATH=$N_PREFIX/bin:$PATH
+
+### PATHの追加
+export PATH="$HOME/.local/bin:$PATH"
